@@ -33,6 +33,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 .btn-nav:hover{background:rgba(255,255,255,.2)}
 .btn-nav.primary{background:var(--accent);border-color:var(--accent)}
 .btn-nav.primary:hover{background:var(--accent-light)}
+.invoice-type-switcher{display:flex;background:rgba(255,255,255,.1);border-radius:8px;padding:3px;gap:3px}
+.inv-type-btn{background:transparent;border:none;color:rgba(255,255,255,.7);border-radius:6px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .2s;white-space:nowrap}
+.inv-type-btn:hover{color:white;background:rgba(255,255,255,.15)}
+.inv-type-btn.active{background:white;color:var(--navy);}
 
 /* TAB BAR */
 .tab-bar{display:none;background:white;border-bottom:1px solid var(--border);position:sticky;top:56px;z-index:90}
@@ -123,12 +127,13 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
 
 .doc-header{display:flex;border-bottom:2px solid #0f2d5e;min-height:110px}
 .doc-logo-col{width:230px;min-width:230px;padding:14px;border-right:1px solid #0f2d5e;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#fff}
-.doc-logo-img{max-width:200px;max-height:300px;object-fit:contain;display:block}
-.doc-company-col{flex:1;padding:14px 16px;border-right:1px solid #0f2d5e}
+.doc-logo-img{max-width:200px;max-height:90px;object-fit:contain;display:block}
+.doc-company-col{flex:1;padding:10px 12px;border-right:1px solid #0f2d5e;border-left:2px solid #0f2d5e;background:#f7f9fc}
+.doc-co-box{border:1px solid #c8d4e8;border-radius:4px;padding:6px 9px;height:100%;display:flex;flex-direction:column;justify-content:center}
 .doc-co-name{font-size:16px;font-weight:900;color:#0f2d5e;text-transform:uppercase;letter-spacing:.3px}
-.doc-co-tag{font-size:10px;color:#555;margin-top:2px}
-.doc-co-addr{font-size:10.5px;color:#333;margin-top:9px;line-height:1.7;white-space:pre-line}
-.doc-co-gstin{font-size:10.5px;color:#333;margin-top:6px;line-height:1.7}
+.doc-co-tag{font-size:10px;color:#555;margin-top:1px}
+.doc-co-addr{font-size:10.5px;color:#333;margin-top:4px;line-height:1.5;white-space:pre-line}
+.doc-co-gstin{font-size:10.5px;color:#333;margin-top:3px;line-height:1.5}
 .doc-title-col{width:175px;min-width:175px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px}
 .doc-inv-title{font-size:17px;font-weight:900;color:#0f2d5e;letter-spacing:1px;text-align:center}
 .doc-inv-sub{font-size:9.5px;color:#666;margin-top:4px;text-align:center}
@@ -202,6 +207,10 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
     </div>
   </div>
   <div class="nav-actions">
+    <div class="invoice-type-switcher">
+      <button class="inv-type-btn active" id="btnTaxInv" onclick="switchInvoiceType('tax')">📄 Tax Invoice</button>
+      <button class="inv-type-btn" id="btnMaxInv" onclick="switchInvoiceType('max')">📋 Max Invoice</button>
+    </div>
     <button class="btn-nav" onclick="clearAll()">↺ Clear</button>
     <button class="btn-nav primary" id="navPdfBtn" onclick="generatePDF()">⬇ PDF</button>
   </div>
@@ -328,6 +337,21 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
         Add Product Row
       </button>
 
+      <!-- TERMS & CONDITIONS -->
+      <div class="section-label">📜 Terms &amp; Conditions</div>
+      <div class="addr-card">
+        <div class="addr-card-head"><span class="addr-tag" style="background:#555">T&amp;C</span></div>
+        <div class="addr-fields">
+          <div class="field-group">
+            <label>Terms (one per line)</label>
+            <textarea id="termsInput" rows="5" oninput="updateTerms()" style="font-size:12px;line-height:1.6">1. Payment due within 30 days.
+2. Goods once sold will not be taken back.
+3. Interest @18% p.a. on delayed payments.
+4. Subject to Pune jurisdiction. E. &amp; O.E.</textarea>
+          </div>
+        </div>
+      </div>
+
       <!-- TOTALS SUMMARY -->
       <div class="totals-card">
         <div class="totals-card-head">
@@ -366,16 +390,18 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
             </div>
             <div class="doc-company-col">
               <div class="doc-co-name">EvoAxis FMS Global</div>
-              <div class="doc-co-tag">Integrated Solutions for Industrial Excellence.</div>
-              <div class="doc-co-addr">P-87,F-304,Krish Chhaya Colony Talegaon Dabhade, Haveli Pune 410507. INDIA</div>
+              <div class="doc-co-tag">Facility Management Solutions Specialists</div>
+              <div class="doc-co-addr">Plot No. 12, Sector 5, MIDC Industrial Area,
+Pune – 411 019, Maharashtra, India</div>
               <div class="doc-co-gstin">
-                <strong>GSTIN:</strong> 27AMRPT3106B1Z3 &nbsp;|&nbsp; <strong>Mob:</strong> +91-7020108401 , 9356058560 
-               Email:</strong> evoaxisfmsglobal@gmail.com
+                <strong>GSTIN:</strong> 27AADCS1234P1ZA &nbsp;|&nbsp; <strong>PAN:</strong> AADCS1234P<br>
+                <strong>Tel:</strong> +91-20-12345678 &nbsp;|&nbsp; <strong>Email:</strong> accounts@evoaxisfms.in<br>
+                <strong>Website:</strong> <a href="https://www.evoaxisfmsglobal.in/" target="_blank" style="color:#0f2d5e;text-decoration:underline;">www.evoaxisfmsglobal.in</a>
               </div>
             </div>
             <div class="doc-title-col">
-              <div class="doc-inv-title">TAX<br>INVOICE</div>
-              <div class="doc-inv-sub">Original for Recipient</div>
+              <div class="doc-inv-title" id="doc-inv-title-text">TAX<br>INVOICE</div>
+              <div class="doc-inv-sub" id="doc-inv-sub-text">Original for Recipient</div>
             </div>
           </div>
 
@@ -438,17 +464,17 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:1
           <div class="doc-bank">
             <div class="doc-bank-cell">
               <div class="doc-bank-title">Bank Details</div>
-              <strong>Bank:</strong> Bank of India<br>
-              <strong>Branch:</strong> Talegaon dabhade<br>
-              <strong>A/c No.:</strong> 062120110000644<br>
-              <strong>IFSC:</strong> BKID 0000621 &nbsp;|&nbsp; <strong>Type:</strong> Current
+              <strong>Bank:</strong> State Bank of India<br>
+              <strong>Branch:</strong> MIDC Bhosari, Pune<br>
+              <strong>A/c No.:</strong> 38291047560123<br>
+              <strong>IFSC:</strong> SBIN0009876 &nbsp;|&nbsp; <strong>Type:</strong> Current
             </div>
             <div class="doc-bank-cell">
               <div class="doc-bank-title">Terms &amp; Conditions</div>
-              1. Payment due within 30 days.<br>
-              2. Goods once sold will not be taken back.<br>
-              3. Interest @18% p.a. on delayed payments.<br>
-              4. Subject to Pune jurisdiction. E. &amp; O.E.
+              <div id="doc-terms" style="white-space:pre-line;font-size:10px;line-height:1.8;color:#333;">1. Payment due within 30 days.
+2. Goods once sold will not be taken back.
+3. Interest @18% p.a. on delayed payments.
+4. Subject to Pune jurisdiction. E. &amp; O.E.</div>
             </div>
             <div class="doc-sig-cell">
               <div class="doc-bank-title">For EvoAxis FMS Global</div>
@@ -487,6 +513,12 @@ function updateMeta(){
     const [y,m,d] = dateVal.split('-');
     document.getElementById('doc-date').textContent = d+'/'+m+'/'+y;
   }
+}
+
+// ── TERMS ──
+function updateTerms(){
+  const val = document.getElementById('termsInput').value;
+  document.getElementById('doc-terms').textContent = val;
 }
 
 // ── ADDRESSES ──
@@ -680,7 +712,28 @@ function clearAll(){
   document.getElementById('metaSalesperson').value='Praptidhar Sharma';
   document.getElementById('metaPO').value='By Mail';
   setTodayDate();
-  toggleSameAsBill(); renderAll(); recalc(); updateAddr(); updateMeta();
+  document.getElementById('termsInput').value = `1. Payment due within 30 days.\n2. Goods once sold will not be taken back.\n3. Interest @18% p.a. on delayed payments.\n4. Subject to Pune jurisdiction. E. & O.E.`;
+  toggleSameAsBill(); renderAll(); recalc(); updateAddr(); updateMeta(); updateTerms();
+}
+
+let currentInvoiceType = 'tax';
+
+function switchInvoiceType(type){
+  currentInvoiceType = type;
+  const btnTax = document.getElementById('btnTaxInv');
+  const btnMax = document.getElementById('btnMaxInv');
+  const titleEl = document.getElementById('doc-inv-title-text');
+  const subEl = document.getElementById('doc-inv-sub-text');
+
+  if(type === 'tax'){
+    btnTax.classList.add('active'); btnMax.classList.remove('active');
+    titleEl.innerHTML = 'TAX<br>INVOICE';
+    subEl.textContent = 'Original for Recipient';
+  } else {
+    btnMax.classList.add('active'); btnTax.classList.remove('active');
+    titleEl.innerHTML = 'MAX<br>INVOICE';
+    subEl.textContent = 'Original for Recipient';
+  }
 }
 
 function switchTab(tab){
@@ -722,7 +775,7 @@ async function generatePDF(){
         y+=pih;
       }
     }
-    pdf.save('EvoAxis_TAX_INVOICE.pdf');
+    pdf.save(currentInvoiceType === 'tax' ? 'EvoAxis_TAX_INVOICE.pdf' : 'EvoAxis_MAX_INVOICE.pdf');
   }catch(e){alert('PDF failed: '+e.message);}
   btn.innerHTML=`<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9a1 1 0 01-1 1H3a1 1 0 01-1-1V3a1 1 0 011-1z" stroke="white" stroke-width="1.5"/><path d="M10 2v3h3M5 8h6M5 11h4" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg> Download PDF Invoice`;
   btn.disabled=false;navBtn.textContent='⬇ PDF';navBtn.disabled=false;
@@ -740,6 +793,7 @@ setTodayDate();
 addProduct();
 updateAddr();
 updateMeta();
+updateTerms();
 </script>
 </body>
 </html>
